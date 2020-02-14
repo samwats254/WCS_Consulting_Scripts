@@ -1,0 +1,31 @@
+#import imageCollection "terra" MOD13Q1.006 Terra Vegetation Indices 16-Day Global 250m amd set your own geometry in GEE
+
+var year = 2005;
+var monthB = 0;
+var month = 1;
+for(var i = 0; i < 180; i++){
+  print(terra.first());
+  var evi = terra.select(["EVI"]);
+  print(evi.first());
+  if(month == 10){
+    monthB = 1;
+    month = 0;
+  }
+  var date = evi.filterDate(year.toString()+'-'+monthB.toString()+month.toString()+'-01',year.toString()+'-'+monthB.toString()+month.toString()+'-27').filterBounds(Guyana);
+  print(date.size());
+  var image = date.max();
+  Map.addLayer(image, vp);
+  Export.image.toDrive({
+    image:image,
+    description: "EVI_"+year.toString()+"_"+monthB.toString()+month.toString(),
+    folder: "EVI",
+    region: Guyana,
+    scale:250
+  });
+  month = month + 1;
+  if(monthB == 1 && month == 3){
+    year = year + 1;
+    monthB = 0;
+    month = 1;
+  }
+}
