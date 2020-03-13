@@ -1,25 +1,26 @@
 #import modis LST dataset and personal geometry via GEE
 
-var year = 2005;
+var year = 2003;
 var monthB = 0;
 var month = 1;
 for(var i = 0; i < 180; i++){
   print(terra.first());
-  var evi = terra.select(["LST_Day_1km"]);
-  print(evi.first());
+  var lst = terra.select(["LST_Day_1km"]);
+  print(lst.first());
   if(month == 10){
     monthB = 1;
     month = 0;
   }
-  var date = evi.filterDate(year.toString()+'-'+monthB.toString()+month.toString()+'-01',year.toString()+'-'+monthB.toString()+month.toString()+'-27').filterBounds(geometry);
+  var date = lst.filterDate(year.toString()+'-'+monthB.toString()+month.toString()+'-01',year.toString()+'-'+monthB.toString()+month.toString()+'-27').filterBounds(geometry);
   print(date.size());
-  var image = date.median();
+  var med = date.median();
+  var image = med.multiply(0.02).subtract(273.15)
   //Map.addLayer(image);
   
   Export.image.toDrive({
     image:image,
     description: "LST_"+year.toString()+"_"+monthB.toString()+month.toString(),
-    folder: "LST_Guyana",
+    folder: "LSTGuyana",
     region: geometry,
     scale:1000
   });
